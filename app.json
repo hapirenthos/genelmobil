@@ -13,7 +13,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
       "bundleIdentifier": "com.galiba.genelderine"
     },
     "android": {
