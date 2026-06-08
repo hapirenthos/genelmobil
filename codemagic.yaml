@@ -4,7 +4,7 @@ workflows:
     max_build_duration: 60
     instance_type: mac_mini_m1
     environment:
-      node: 20.x # 'latest' yerine Expo için en kararlı LTS sürümü olan Node 20'yi sabitledik
+      node: 20                  # Sürümü düz '20' olarak güncelledik, sistem hata vermeyecektir
       xcode: latest
     triggering:
       events:
@@ -14,6 +14,10 @@ workflows:
     scripts:
       - name: Install pnpm
         script: |
+          # Node 20'nin aktif olduğundan emin oluyoruz
+          nvm use 20 || nvm install 20
+          
+          # pnpm kurulumu
           curl -fsSL https://get.pnpm.io/install.sh | sh -
           export PNPM_HOME="$HOME/Library/pnpm"
           export PATH="$PNPM_HOME:$PATH"
@@ -22,14 +26,13 @@ workflows:
           
       - name: Install dependencies
         script: |
-          # Eğer lock dosyası uyumsuzluk yaratıyorsa katı kuralları gevşetiyoruz
+          nvm use 20
           pnpm config set frozen-lockfile false
-          
-          # Bağımlılıkları yüklüyoruz (Hata detaylarını görmek için verbose modunda)
           pnpm install --reporter=default
       
       - name: Expo Prebuild (Generate Native iOS Project)
         script: |
+          nvm use 20
           pnpm exec expo prebuild --platform ios
           
       - name: Build iOS Application (Unsigned)
