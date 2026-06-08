@@ -4,7 +4,7 @@ workflows:
     max_build_duration: 60
     instance_type: mac_mini_m1
     environment:
-      node: 20                  # Sürümü düz '20' olarak güncelledik, sistem hata vermeyecektir
+      node: 20
       xcode: latest
     triggering:
       events:
@@ -14,9 +14,6 @@ workflows:
     scripts:
       - name: Install pnpm
         script: |
-          # Node 20'nin aktif olduğundan emin oluyoruz
-          nvm use 20 || nvm install 20
-          
           # pnpm kurulumu
           curl -fsSL https://get.pnpm.io/install.sh | sh -
           export PNPM_HOME="$HOME/Library/pnpm"
@@ -26,13 +23,16 @@ workflows:
           
       - name: Install dependencies
         script: |
-          nvm use 20
+          # Corepack'in 'Yarn kullanmak zorundasın' engellemesini kapatıyoruz
+          export COREPACK_ENABLE_STRICT=0
+          echo "export COREPACK_ENABLE_STRICT=0" >> $CM_ENV
+          
+          # pnpm kuralları
           pnpm config set frozen-lockfile false
           pnpm install --reporter=default
       
       - name: Expo Prebuild (Generate Native iOS Project)
         script: |
-          nvm use 20
           pnpm exec expo prebuild --platform ios
           
       - name: Build iOS Application (Unsigned)
