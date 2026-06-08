@@ -44,27 +44,23 @@ workflows:
       - name: Build iOS Application (Unsigned)
         script: |
           #!/usr/bin/env bash
+
           cd ios
           
-          # 1. CocoaPods önbelleğini temizle (Boost checksum hatasını çözmek için)
-          echo "CocoaPods önbelleği temizleniyor..."
-          pod cache clean boost --all
-          pod cache clean --all
-          
-          # 2. Bağımlılıkları güncelleyerek kur
+          # 1. CocoaPods kurulumunu başlat
           echo "CocoaPods kurulumu başlatılıyor..."
-          pod install --repo-update
+          pod install
           
-          # 3. Çalışma alanını (workspace) otomatik bul
-          WORKSPACE_FILE=$(ls *.xcworkspace | head -n 1)
+          # 2. Çalışma alanını otomatik bul (-d parametresi klasörün içine girilmesini engeller)
+          WORKSPACE_FILE=$(ls -d *.xcworkspace | head -n 1)
           
-          # 4. Uzantıyı atarak scheme adını elde et
+          # 3. Uzantıyı atarak scheme adını elde et
           SCHEME_NAME=$(basename "$WORKSPACE_FILE" .xcworkspace)
           
           echo "Bulunan Workspace: $WORKSPACE_FILE"
           echo "Kullanılan Scheme: $SCHEME_NAME"
           
-          # 5. Uygulamayı Derle
+          # 4. Uygulamayı Derle
           xcodebuild -workspace "$WORKSPACE_FILE" \
             -scheme "$SCHEME_NAME" \
             -configuration Release \
@@ -72,7 +68,6 @@ workflows:
             CODE_SIGN_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             clean archive
-
 
             
       - name: Export IPA (Unsigned)
