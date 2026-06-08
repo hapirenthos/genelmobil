@@ -31,5 +31,6 @@
     "qs": "^6.11.2",
     "xdl": "^60.0.12"
   },
-  "private": true
+  "private": true,
+  "packageManager": "pnpm@9.15.0"
 }
