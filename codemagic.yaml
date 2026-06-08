@@ -14,18 +14,23 @@ workflows:
     scripts:
       - name: Install pnpm
         script: |
-          sudo npm install -g pnpm
-          pnpm setup
-          source ~/.bashrc || source ~/.zshrc
+          # pnpm'i resmi bağımsız betikle yüklüyoruz (Sudo gerektirmez ve sorunsuzdur)
+          curl -fsSL https://get.pnpm.io/install.sh | sh -
+          
+          # Yüklenen pnpm yolunu sunucunun ortam değişkenlerine kalıcı olarak ekliyoruz
+          export PNPM_HOME="$HOME/Library/pnpm"
+          export PATH="$PNPM_HOME:$PATH"
+          
+          # Sonraki adımların da pnpm'i görebilmesi için Codemagic ortamına yazıyoruz
+          echo "export PNPM_HOME=\"$HOME/Library/pnpm\"" >> $CM_ENV
+          echo "export PATH=\"$PNPM_HOME:\$PATH\"" >> $CM_ENV
           
       - name: Install dependencies
         script: |
-          source ~/.bashrc || source ~/.zshrc
           pnpm install
       
       - name: Expo Prebuild (Generate Native iOS Project)
         script: |
-          source ~/.bashrc || source ~/.zshrc
           pnpm exec expo prebuild --platform ios
           
       - name: Build iOS Application (Unsigned)
