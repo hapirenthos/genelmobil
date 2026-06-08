@@ -14,12 +14,14 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
+      "bundleIdentifier": "com.galiba.genelderine"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+        "package": "com.galiba.genelderine"
     },
     "web": {
       "bundler": "metro",
