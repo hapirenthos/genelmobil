@@ -60,13 +60,15 @@ workflows:
           echo "Bulunan Workspace: $WORKSPACE_FILE"
           echo "Kullanılan Scheme: $SCHEME_NAME"
           
-          # 4. Uygulamayı Derle
+          # 4. Uygulamayı Derle (İmzalama zorunlulukları tamamen agresif şekilde kapatıldı)
           xcodebuild -workspace "$WORKSPACE_FILE" \
             -scheme "$SCHEME_NAME" \
             -configuration Release \
             -archivePath $HOME/build/UnsignedApp.xcarchive \
-            CODE_SIGN_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM="" \
             clean archive
 
             
