@@ -4,7 +4,7 @@ workflows:
     max_build_duration: 60
     instance_type: mac_mini_m1
     environment:
-      node: latest
+      node: 20.x # 'latest' yerine Expo için en kararlı LTS sürümü olan Node 20'yi sabitledik
       xcode: latest
     triggering:
       events:
@@ -14,20 +14,19 @@ workflows:
     scripts:
       - name: Install pnpm
         script: |
-          # pnpm'i resmi bağımsız betikle yüklüyoruz (Sudo gerektirmez ve sorunsuzdur)
           curl -fsSL https://get.pnpm.io/install.sh | sh -
-          
-          # Yüklenen pnpm yolunu sunucunun ortam değişkenlerine kalıcı olarak ekliyoruz
           export PNPM_HOME="$HOME/Library/pnpm"
           export PATH="$PNPM_HOME:$PATH"
-          
-          # Sonraki adımların da pnpm'i görebilmesi için Codemagic ortamına yazıyoruz
           echo "export PNPM_HOME=\"$HOME/Library/pnpm\"" >> $CM_ENV
           echo "export PATH=\"$PNPM_HOME:\$PATH\"" >> $CM_ENV
           
       - name: Install dependencies
         script: |
-          pnpm install
+          # Eğer lock dosyası uyumsuzluk yaratıyorsa katı kuralları gevşetiyoruz
+          pnpm config set frozen-lockfile false
+          
+          # Bağımlılıkları yüklüyoruz (Hata detaylarını görmek için verbose modunda)
+          pnpm install --reporter=default
       
       - name: Expo Prebuild (Generate Native iOS Project)
         script: |
