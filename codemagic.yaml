@@ -33,28 +33,32 @@ workflows:
       
       - name: Expo Prebuild (Generate Native iOS Project)
         script: |
-          pnpm exec expo prebuild --platform ios
+          pnpm exec expo prebuild --platform ios --no-install --clean
           
       - name: Build iOS Application (Unsigned)
         script: |
           #!/usr/bin/env bash
-
           cd ios
           
-          # 1. CocoaPods bağımlılıklarını kur (Bu adım .xcworkspace dosyasını oluşturacak)
-          echo "CocoaPods kurulumu başlatılıyor..."
-          pod install
+          # 1. CocoaPods önbelleğini temizle (Boost checksum hatasını çözmek için)
+          echo "CocoaPods önbelleği temizleniyor..."
+          pod cache clean boost --all
+          pod cache clean --all
           
-          # 2. Çalışma alanını (workspace) otomatik bul
+          # 2. Bağımlılıkları güncelleyerek kur
+          echo "CocoaPods kurulumu başlatılıyor..."
+          pod install --repo-update
+          
+          # 3. Çalışma alanını (workspace) otomatik bul
           WORKSPACE_FILE=$(ls *.xcworkspace | head -n 1)
           
-          # 3. Uzantıyı atarak scheme adını elde et (Genelde workspace ile aynı isimdedir)
+          # 4. Uzantıyı atarak scheme adını elde et
           SCHEME_NAME=$(basename "$WORKSPACE_FILE" .xcworkspace)
           
           echo "Bulunan Workspace: $WORKSPACE_FILE"
           echo "Kullanılan Scheme: $SCHEME_NAME"
           
-          # 4. Uygulamayı Derle
+          # 5. Uygulamayı Derle
           xcodebuild -workspace "$WORKSPACE_FILE" \
             -scheme "$SCHEME_NAME" \
             -configuration Release \
@@ -62,6 +66,7 @@ workflows:
             CODE_SIGN_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             clean archive
+
 
             
       - name: Export IPA (Unsigned)
