@@ -5,7 +5,7 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       node: latest
-      xcode: latest
+      xcode: 14.3
     triggering:
       events:
         - push
