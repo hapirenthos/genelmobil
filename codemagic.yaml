@@ -33,7 +33,13 @@ workflows:
       
       - name: Expo Prebuild (Generate Native iOS Project)
         script: |
-          pnpm exec expo prebuild --platform ios --no-install --clean
+          #!/usr/bin/env bash
+          # Varsa eski ve bozuk iOS klasörünü tamamen sil
+          rm -rf ios
+          
+          # iOS projesini sıfırdan ve temiz bir şekilde oluştur
+          pnpm exec expo prebuild --platform ios --clean --no-install
+
           
       - name: Build iOS Application (Unsigned)
         script: |
