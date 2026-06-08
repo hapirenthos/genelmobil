@@ -47,6 +47,12 @@ workflows:
 
           cd ios
           
+          # --- YENİ EKLENEN KISIM: Metro Bundler için Node Yolunu ve RAM Sınırını Ayarla ---
+          echo "export NODE_BINARY=$(command -v node)" > .xcode.env
+          echo "export NODE_BINARY=$(command -v node)" > .xcode.env.local
+          export NODE_OPTIONS="--max-old-space-size=4096"
+          # ---------------------------------------------------------------------------------
+          
           # 1. CocoaPods kurulumunu başlat
           echo "CocoaPods kurulumu başlatılıyor..."
           pod install
@@ -60,7 +66,7 @@ workflows:
           echo "Bulunan Workspace: $WORKSPACE_FILE"
           echo "Kullanılan Scheme: $SCHEME_NAME"
           
-          # 4. Uygulamayı Derle (İmzalama zorunlulukları tamamen agresif şekilde kapatıldı)
+          # 4. Uygulamayı Derle
           xcodebuild -workspace "$WORKSPACE_FILE" \
             -scheme "$SCHEME_NAME" \
             -configuration Release \
@@ -71,7 +77,6 @@ workflows:
             DEVELOPMENT_TEAM="" \
             clean archive
 
-            
       - name: Export IPA (Unsigned)
         script: |
           mkdir -p $CM_EXPORT_DIR
